@@ -1,63 +1,83 @@
+const arrayProductos = [];
+
+const producto1 = new Producto(1, 'Chocolate', 530);
+const producto2 = new Producto(2, 'Vainilla', 500);
+const producto3 = new Producto(3, 'Ambos', 1030);
+
+arrayProductos.push(producto1, producto2, producto3);
+
+const ordenarMenorMayor = () => {
+    arrayProductos.sort((a, b) => a.precio - b.precio);
+    mostrarListaOrdenada();
+};
+
+const ordenarMayorMenor = () => {
+    arrayProductos.sort((a, b) => b.precio - a.precio);
+    mostrarListaOrdenada();
+};
+
+const mostrarListaOrdenada = () => {
+    let array = [];
+    arrayProductos.forEach(producto => array.push(producto.nombre+' $'+producto.precio));
+    alert('Lista de precios:'+'\n'+array.join('\n'));
+};
+
+
 function comprarProductos() {
-    let producto = '';
-    let precio = 0;
-    let cantidad = 0;
-    let totalCompra = 0;
-    let cantidadTotal = 0;
+    let productoNombre = '';
+    let productoCantidad = 0;
+    let total = 0;
     let seguirComprando = false;
 
     do {
-        producto = prompt('¿Queres comprar helado de chocolate, vainilla o ambos?', 'Ej: ambos');
-        cantidad = parseInt(prompt('¿Cuantos queres comprar?'));
+        productoNombre = prompt('¿Queres comprar Chocolate, Vainilla o Ambos?', 'Ej: Ambos');
+        productoCantidad = parseInt(prompt('¿Cuantos Kilos queres comprar?'));
 
-        let cantidadValidada = validarCantidad(cantidad);
+        const producto = arrayProductos.find(producto => producto.nombre === productoNombre);
 
-        switch (producto) {
-            case 'chocolate':
-                precio = 700;
-                break;
-            case 'vainilla':
-                precio = 700;
-                break;
-            case 'ambos':
-                precio = 1400;
-                break;
-            default:
-                alert('Alguno de los datos ingresados no es correcto.');
-                precio = 0;
-                cantidad = 0;
-                break;
+        if (producto) {
+            total += producto.precio * productoCantidad;
+        } else {
+            alert('El producto no se encuentra en stock.');
         }
 
-        totalCompra += precio * cantidadValidada;
-        seguirComprando = confirm('¿Queres agregar otro producto?');
+        seguirComprando = confirm('¿Queres comprar mas?');
 
     } while (seguirComprando)
 
-
-    return totalCompra;
+    aplicarDescuento(total);
 }
 
-function validarCantidad(cantidad) {
-    while(Number.isNaN(cantidad) || cantidad === 0) {
-        if (cantidad !== 0) {
-            alert('Debe agregar un número.')
-        } else {
-            alert('Debe ingresar un número distinto de cero.')
-        }
-        cantidad = parseInt(prompt('¿Cuantos queres comprar?'));
+function aplicarDescuento(totalCompra) {
+    if (totalCompra >= 2000) {
+        totalCompra = totalCompra * 0.80;
+        alert('Tenes un 20% de descuento!');
+    }
+    calcularEnvio(totalCompra)
+}
+
+function calcularEnvio(totalCompra) {
+    let tieneEnvioADomicilio = confirm('Queres envio a domicilio?');
+
+    if (tieneEnvioADomicilio && totalCompra >= 2000) {
+        alert('Tenes envio gratis. El total de la compra es: '+totalCompra);
+    } else if (tieneEnvioADomicilio && totalCompra < 2000 && totalCompra !== 0) {
+        totalCompra += 500;
+        alert('El envío cuesta $500. El total de la compra es: '+totalCompra);
+    } else {
+        alert('El total de la compra es: '+totalCompra);
+    }
+};
+
+function comprar() {
+    const quieroOrdenar =confirm('¿Querés ordenar la lista de productos del mas barato al mas caro?');
+    if (quieroOrdenar) {
+        ordenarMenorMayor();
+    } else {
+        ordenarMayorMenor();
     }
 
-    return cantidad;
-}
+    comprarProductos();
+};
 
-const totalCompra = comprarProductos();
-
-function calcularTotalAPagar(totalCompra) {
-    totalCompra = totalCompra;
-    alert('El total a pagar es: $'+totalCompra);
-}
-
-calcularTotalAPagar(totalCompra);
-
-
+comprar();
